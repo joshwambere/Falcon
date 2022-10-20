@@ -1,10 +1,11 @@
 using Searching.Management.Api.Attributes;
 using Searching.Management.Api.DTOs;
+using Searching.Management.Api.interfaces;
 
 namespace Searching.Management.Api.Services;
 
 [ScoppedService]
-public class UserService 
+public class UserService : IUserInterface
 {
 
     public Task<LoginResponse> LoginAsync(LoginRequest request)
