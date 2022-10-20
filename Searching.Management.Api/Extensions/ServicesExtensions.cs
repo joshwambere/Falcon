@@ -11,22 +11,32 @@ public static class ServicesExtensions
         var assemblies = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(ass=>ass.GetTypes())
             .Where(type => type.IsDefined(scopedServiceType,false) || type.IsDefined(singletonServiceType, false))
-            .Select(ass=>ass);
+            .Select(a => new { assignedType = a, serviceTypes = a.GetInterfaces().ToList() }).ToList();
         
         
         /*
          * Add custom services based on attributes type
          */
-        foreach (var assembly in assemblies) 
+        foreach (var assemblyService in assemblies) 
         {
-            if (assembly.IsDefined(scopedServiceType, false))
+            if (assemblyService.assignedType.IsDefined(scopedServiceType, false))
             {
-                services.AddScoped(assembly);
+
+                if (assemblyService.serviceTypes.Count > 0)
+                {
+                    foreach (var serviceType in assemblyService.serviceTypes)
+                    {
+                        services.AddScoped(serviceType, assemblyService.assignedType);
+                    }
+                }else
+                {
+                    services.AddScoped(assemblyService.assignedType);
+                }
             }
 
-            if (assembly.IsDefined(singletonServiceType, false))
+            if (assemblyService.assignedType.IsDefined(singletonServiceType, false))
             {
-                services.AddSingleton(assembly);
+                assemblyService.serviceTypes.ForEach(register =>services.AddSingleton(register, assemblyService.assignedType));
             }
         }
         

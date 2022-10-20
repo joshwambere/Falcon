@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Searching.Management.Api.DTOs;
+using Searching.Management.Api.interfaces;
 using Searching.Management.Api.Services;
 
 namespace Searching.Management.Api.Controllers;
@@ -8,9 +9,9 @@ namespace Searching.Management.Api.Controllers;
 [Route("api/users")]
 public class UsersController : ControllerBase
 {
-    private readonly  UserService _userService;
+    private readonly  IUserInterface _userService;
     
-    public UsersController(UserService userService)
+    public UsersController(IUserInterface userService)
     {
         _userService = userService;
     }
