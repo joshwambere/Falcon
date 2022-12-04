@@ -3,5 +3,8 @@
 **/.idea
 **/obj
 **/bin
+**/Debug
+**/Release
+**/Folder.DotSettings.user
 
 

@@ -9,3 +9,9 @@ public class ScoppedServiceAttribute : Attribute
 public class SingletonServiceAttribute : Attribute
 {
 }
+
+[AttributeUsage(AttributeTargets.Class | AttributeTargets.Interface)]
+public class AppMiddleWareAttribute : Attribute
+{
+}
+
