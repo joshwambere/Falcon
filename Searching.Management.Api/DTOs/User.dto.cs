@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Searching.Management.Api.DTOs;
 
 public class LoginRequest
@@ -6,12 +8,12 @@ public class LoginRequest
     public string Password { get; set; }
 }
 
-public class RegisterRequest
+public class RegisterDto
 {
-    public string Username { get; set; }
-    public string Password { get; set; }
-    public string Email { get; set; }
-    public string Phone { get; set; }
+    [Required] public  string Username { get; set; }
+    [Required, MinLength(6)]public string Password { get; set; }
+    [Required,EmailAddress]public string Email { get; set; }
+    [Required, Phone]public string Phone { get; set; }
 }
 
 public class  LoginResponse

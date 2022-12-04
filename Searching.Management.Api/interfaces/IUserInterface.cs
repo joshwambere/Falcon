@@ -6,7 +6,7 @@ public interface IUserInterface
 {
     public Task<LoginResponse> LoginAsync(LoginRequest request);
 
-    public Task<RegisterResponse> RegisterAsync(RegisterRequest request);
+    public Task<RegisterResponse> RegisterAsync(RegisterDto request);
 
 
     public Task<LogoutResponse> LogoutAsync();

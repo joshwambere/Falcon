@@ -8,9 +8,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Data" />
-    <Folder Include="Exceptions" />
-    <Folder Include="Logging" />
+    <Folder Include="Data\EntitesConfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="EntityFramework" Version="6.4.4" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.0-rc.2.22472.11">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.0-rc.2.22472.11" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0-rc.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Searching.Domain\Searching.Domain.csproj" />
   </ItemGroup>
 
 </Project>

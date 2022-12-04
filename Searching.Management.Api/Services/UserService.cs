@@ -1,3 +1,6 @@
+using System.Text.Json;
+using Searching.Domain.Entities;
+using Searching.Infrastructure.Data;
 using Searching.Management.Api.Attributes;
 using Searching.Management.Api.DTOs;
 using Searching.Management.Api.interfaces;
@@ -5,8 +8,13 @@ using Searching.Management.Api.interfaces;
 namespace Searching.Management.Api.Services;
 
 [ScoppedService]
-public class UserService : IUserInterface
+public class UserService : BaseService
 {
+
+    public UserService(IUnitOfWork _unitOfWork) : base(_unitOfWork)
+    {
+    }
+    
 
     public Task<LoginResponse> LoginAsync(LoginRequest request)
     {
@@ -15,13 +23,47 @@ public class UserService : IUserInterface
             Token = "token"
         });
     }
-    public Task<RegisterResponse> RegisterAsync(RegisterRequest request)
+    public async Task<RegisterResponse>  RegisterAsync(RegisterDto request)
     {
-        return Task.FromResult(new RegisterResponse
+        var newUser = new User
         {
-            message = "Registration successful",
-            success = true
-        });
+            UserName = request.Username,
+            Password = request.Password,
+            Email = request.Email,
+            Phone = request.Phone
+        };
+        
+        try
+        {
+            Console.WriteLine(JsonSerializer.Serialize(newUser));
+            var repository = UnitOfWork.AsyncRepository<User>();
+            await repository.AddAsync(newUser);
+            await UnitOfWork.SaveChangesAsync();
+            var saved = await UnitOfWork.AsyncRepository<User>().GetAsync(x=>x.Id==newUser.Id);
+            if (saved != null)
+            {
+                Console.WriteLine(saved.Id);
+                return await Task.FromResult(new RegisterResponse
+                {
+                    message = "User created successfully",
+                    success = false
+                });  
+            }
+            
+            return await Task.FromResult(new RegisterResponse
+            {
+                message = "User not created",
+                success = true
+            });
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+
+
+
     }
 
     public Task<LogoutResponse> LogoutAsync()
