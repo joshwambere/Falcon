@@ -61,6 +61,15 @@ public static class ServicesExtensions
         return service.AddScoped<IUnitOfWork, UnitOfWork>();
     }
     
+    /*
+     * ADD HttpContextAccessor
+     */
+    
+    public static IServiceCollection ExtendHttpContextAccessor(this IServiceCollection service)
+    {
+        return service.AddHttpContextAccessor();
+    }
+    
     public static IServiceCollection AddDatabase(this IServiceCollection service, IConfiguration configuration)
     {
         return service.AddDbContext<DatabaseContext>(option =>

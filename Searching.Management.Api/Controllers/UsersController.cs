@@ -1,6 +1,7 @@
+using System.Web;
 using Microsoft.AspNetCore.Mvc;
-using OpenTelemetry.Trace;
 using Searching.Infrastructure.Exceptions;
+using Searching.Infrastructure.Utils;
 using Searching.Management.Api.DTOs;
 using Searching.Management.Api.Services;
 
@@ -12,12 +13,13 @@ public class UsersController : ControllerBase
 {
     private readonly  UserService _userService;
     private ILogger<UsersController> _logger;
+    private readonly IHttpContextAccessor _httpContextAccessor;
 
-
-    public UsersController(UserService userService, ILogger<UsersController> logger)
+    public UsersController(UserService userService, ILogger<UsersController> logger, IHttpContextAccessor httpContextAccessor)
     {
         _userService = userService;
         _logger = logger;
+        _httpContextAccessor = httpContextAccessor;
     }
     
     
@@ -25,13 +27,13 @@ public class UsersController : ControllerBase
     public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
     {
         var result = await _userService.LoginAsync(request);
+        
         return Ok(result);
     }
     
     [HttpPost("register")]
     public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterDto userDto)
     {
-        throw new DomainNotFoundException("resources forbidden");
         var result = await _userService.RegisterAsync(userDto);
         return Ok(result);
     }
@@ -43,10 +45,29 @@ public class UsersController : ControllerBase
         return Ok(result);
     }
     
-    [HttpPost("verify")]
-    public async Task<ActionResult<VerifyResponse>> Verify([FromBody] VerifyRequest request)
+    
+    [HttpGet("verify/{token}")]
+    public async Task<ContentResult> Verify(string token)
     {
-        var result = await _userService.VerifyAsync(request);
-        return Ok(result);
+
+        try
+        {
+            await _userService.VerifyAsync(token);
+            return new ContentResult
+            {
+                ContentType = "text/html",
+                StatusCode = 200,
+                Content = DomainTemplates.ActivatationSuccess()
+            };
+        }
+        catch (Exception e)
+        {
+            return new ContentResult
+            {
+                ContentType = "text/html",
+                StatusCode = 400,
+                Content = DomainTemplates.FailedActivation(e.Message)
+            };
+        }
     }
 }
