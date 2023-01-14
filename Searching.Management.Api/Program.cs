@@ -1,15 +1,16 @@
 using Searching.Management.Api.Extensions;
 using Searching.Management.Api.Middlewares;
-using OpenTelemetry.Resources;
-using System.Diagnostics;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Trace;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Searching.Management.Api;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.Configure<AppSettings>(builder.Configuration);
 builder.Services.AddTransient<ExceptionMiddleware>();
-builder.Services.AddDatabase(builder.Configuration).ExtendUnitOfWork().AddRepositories().ExtendService();
+builder.Services.AddDatabase(builder.Configuration).ExtendUnitOfWork().AddRepositories().ExtendHttpContextAccessor().ExtendService();
 
 builder.Services.AddControllers();
 
@@ -17,6 +18,21 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Logging.AddSeq();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+            
+            
+    };
+});
 
 var app = builder.Build();
 
@@ -28,6 +44,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.RegisterMiddleware();
 app.UseAuthorization();
 
