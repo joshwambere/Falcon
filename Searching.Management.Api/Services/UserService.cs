@@ -6,6 +6,9 @@ using Searching.Management.Api.DTOs;
 using Searching.Management.Api.Helpers;
 using Searching.Infrastructure.Exceptions;
 using Searching.Infrastructure.Utils;
+using Searching.Domain.Otp;
+
+
 
 namespace Searching.Management.Api.Services;
 
@@ -16,11 +19,15 @@ public class UserService : BaseService
     private readonly ITokenHelper _tokenHelper;
     private readonly IMailService _mailService;
     private readonly AppSettings _appSettings;
-    public UserService(IUnitOfWork _unitOfWork, ITokenHelper tokenHelper, IMailService mailService, IOptions<AppSettings> appSettings) : base(_unitOfWork)
+    private readonly IOtpHelper _otpHelper;
+    
+    public UserService(IUnitOfWork _unitOfWork, ITokenHelper tokenHelper, IOtpHelper otpHelper, IMailService mailService, IOptions<AppSettings> appSettings) : base(_unitOfWork)
     {
         _tokenHelper = tokenHelper;
+        _otpHelper = otpHelper;
         _mailService = mailService;
         _appSettings = appSettings.Value;
+        
     }
     
 
@@ -89,7 +96,7 @@ public class UserService : BaseService
             {
                 return await Task.FromResult(new RegisterResponse
                 {
-                    message = "User Not created",
+                    message = "Something Went wrong",
                     success = true
                 });
             }
@@ -110,9 +117,64 @@ public class UserService : BaseService
         {
             throw new DomainInternalServerErrorException(e.Message);
         }
+    }
 
+    public async Task<RegisterResponse> RegisterWithOtp(RegisterDto request)
+    {
+        var newUser = new User
+        {
+            UserName = request.Username,
+            Password = request.Password,
+            Email = request.Email,
+            Phone = request.Phone
+        };
+        
+        try
+        {
+            newUser.Password = PasswordHelper.HashPassword(newUser.Password);
+            var repository = UnitOfWork.AsyncRepository<User>();
+            await repository.AddAsync(newUser);
+            await UnitOfWork.SaveChangesAsync();
+            var savedUser = await UnitOfWork.AsyncRepository<User>().GetAsync(x=>x.Id==newUser.Id);
+            var otp = Otps.GenerateOtp();
 
+            if (Equals(savedUser,null))
+            {
+                return await Task.FromResult(new RegisterResponse
+                {
+                    message = "Something Went wrong",
+                    success = true
+                });
+            }
+            var template = EmailTemplateEngine.OtpEmail(savedUser.UserName, otp);
+            var send = _mailService.SendMail(savedUser.Email, "Account Activation", template);
+            var otpRepository = UnitOfWork.AsyncRepository<Otp>();
+            var encryptedOtp = _otpHelper.EncryptOtp(otp);
+            var otpEntity = new Otp
+            {
+                OtpCode = encryptedOtp.ToString(),
+                User = savedUser,
+                IsUsed = false,
+                IsDeleted = false
+            };
+            await otpRepository.AddAsync(otpEntity);
+            await UnitOfWork.SaveChangesAsync();
+            
+            if (send == null)
+            {
+                throw  new DomainExternalServiceException("Error sending email");
+            }
+            return await Task.FromResult(new RegisterResponse
+            {
+                message = "User created successfully",
+                success = true
+            });
 
+        }
+        catch (Exception e)
+        {
+            throw new DomainInternalServerErrorException(e.Message);
+        }
     }
 
     public Task<LogoutResponse> LogoutAsync()
@@ -147,6 +209,15 @@ public class UserService : BaseService
         await UnitOfWork.AsyncRepository<User>().UpdateAsync(user);
         await UnitOfWork.SaveChangesAsync();
 
+        return await Task.FromResult(new VerifyResponse
+        {
+            message = "Verification successful",
+            success = true
+        });
+    }
+
+    public async Task<VerifyResponse> VerifyOtpAsync(OtpDto otp)
+    {
         return await Task.FromResult(new VerifyResponse
         {
             message = "Verification successful",
