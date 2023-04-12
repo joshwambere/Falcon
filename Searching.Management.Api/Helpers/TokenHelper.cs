@@ -16,6 +16,7 @@ public  class TokenHelper : ITokenHelper
     public  TokenHelper(IOptions<AppSettings> appSettings)
     {
         _appSettings = appSettings.Value;
+        
     }
     public string GenerateToken(User user, int duration=59)
     {

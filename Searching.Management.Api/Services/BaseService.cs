@@ -10,5 +10,5 @@ public class BaseService
         UnitOfWork = unitOfWork;
     }
 
-    protected internal IUnitOfWork UnitOfWork { get; set; }
+    protected internal IUnitOfWork UnitOfWork { get; }
 }

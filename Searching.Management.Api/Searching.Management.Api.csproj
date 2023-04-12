@@ -28,6 +28,7 @@
     <PackageReference Include="Seq.Extensions.Logging" Version="6.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.25.1" />
+    <PackageReference Include="VaultSharp" Version="1.12.2.1" />
   </ItemGroup>
 
   <ItemGroup>
