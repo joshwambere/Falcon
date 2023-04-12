@@ -42,3 +42,9 @@ public class VerifyRequest
 {
     public string OTP { get; set; }
 }
+
+public class OtpDto
+{
+    [Required,MaxLength(4), MinLength(4)]public string OTPCode { get; set; }
+    
+}

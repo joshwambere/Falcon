@@ -21,6 +21,8 @@
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="7.0.0-rc.2.22472.11" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="7.0.0-rc.2" />
+    <PackageReference Include="Refit" Version="6.3.2" />
+    <PackageReference Include="RestEase" Version="1.6.1" />
   </ItemGroup>
 
   <ItemGroup>

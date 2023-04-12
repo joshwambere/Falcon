@@ -34,7 +34,7 @@ public class UsersController : ControllerBase
     [HttpPost("register")]
     public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterDto userDto)
     {
-        var result = await _userService.RegisterAsync(userDto);
+        var result = await _userService.RegisterWithOtp(userDto);
         return Ok(result);
     }
     
@@ -69,5 +69,12 @@ public class UsersController : ControllerBase
                 Content = DomainTemplates.FailedActivation(e.Message)
             };
         }
+    }
+    
+    [HttpPost("verify")]
+    public async Task<ActionResult<VerifyResponse>> VerifyOtp([FromBody] OtpDto verifyByOtpDto)
+    {
+        await _userService.VerifyOtpAsync(verifyByOtpDto);
+        return Ok();
     }
 }

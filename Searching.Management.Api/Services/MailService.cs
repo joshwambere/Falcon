@@ -23,7 +23,7 @@ public class MailService: IMailService
         var msg = new SendGridMessage
         {
             From = new EmailAddress(_appSettings.Sendgrid.senderEmail, _appSettings.Sendgrid.senderName),
-            Subject = "Sending with Twilio SendGrid is Fun",
+            Subject = subject,
             PlainTextContent = "and easy to do anywhere, even with C#",
             HtmlContent =template,
             
