@@ -13,4 +13,5 @@ public class User:BaseEntity
     public bool IsVerified { get; set; } = false;
     public string? Roles { get; set; } = Enum.GetName(typeof(UserRoles), UserRoles.User);
     public string? RefreshToken { get; set; }
+    public DateTime? RefreshTokenExpiryTime { get; set; }
 }

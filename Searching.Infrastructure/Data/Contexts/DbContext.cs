@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Searching.Domain.Base;
-using DbContext = Microsoft.EntityFrameworkCore.DbContext;
 
 
 namespace Searching.Infrastructure.Data.Contexts;

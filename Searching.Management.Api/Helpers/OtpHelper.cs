@@ -1,7 +1,6 @@
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
 using Searching.Infrastructure.Exceptions;
 using Searching.Infrastructure.KMS;
 using Searching.Management.Api.Attributes;
@@ -32,12 +31,13 @@ public class OtpHelper:IOtpHelper
             RoleId = _appSettings.HashiCorp.RoleId,
             SecretId = _appSettings.HashiCorp.SecretId
         });
+        Console.WriteLine(response);
         
         if (response.IsCompleted)
         {
             var json = await response;
             var token = json.Token;
-            Console.WriteLine(response);
+            
             return token;
         }else
         {
@@ -47,11 +47,13 @@ public class OtpHelper:IOtpHelper
         
     }
 
-    public  byte[] EncryptOtp(string OTP)
+    public byte[] EncryptOtp(string OTP)
     {
         
-        var secreteKey = GetSecreteKey();
-        var key = Encoding.UTF8.GetBytes(secreteKey.Result);
+        var secreteKey = GetSecreteKey().Result;
+        var client = new VaultClient();
+        var keys = client.ReadSecret("sdsds", secreteKey).Result;
+        var key = Encoding.UTF8.GetBytes("dfd");
         
         using (var aes = new AesCryptoServiceProvider())
         {

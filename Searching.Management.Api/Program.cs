@@ -1,3 +1,4 @@
+using System.Net;
 using Searching.Management.Api.Extensions;
 using Searching.Management.Api.Middlewares;
 using System.Text;
@@ -33,6 +34,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
             
     };
 });
+
 
 var app = builder.Build();
 
