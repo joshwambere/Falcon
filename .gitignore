@@ -7,5 +7,6 @@
 **/Release
 **/Folder.DotSettings.user
 **/appsettings.json
+.DS_Store
 
 

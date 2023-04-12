@@ -12,7 +12,7 @@ public class VaultClient
         {
             BaseAddress = new Uri("https://Falcon-private-vault-20aeacbf.0333e6cc.z1.hashicorp.cloud:8200/")
         };
-
+ 
         _vaultApi = RestClient.For<IvaultApi>(client);
     }
 
