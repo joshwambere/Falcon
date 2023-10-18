@@ -149,14 +149,15 @@ public class UserService : BaseService
             var template = EmailTemplateEngine.OtpEmail(savedUser.UserName, otp);
             var send = _mailService.SendMail(savedUser.Email, "Account Activation", template);
             var otpRepository = UnitOfWork.AsyncRepository<Otp>();
-            var encryptedOtp = _otpHelper.EncryptOtp(otp);
+            
             var otpEntity = new Otp
             {
-                OtpCode = encryptedOtp.ToString(),
+                OtpCode = otp,
                 User = savedUser,
                 IsUsed = false,
                 IsDeleted = false
             };
+            
             await otpRepository.AddAsync(otpEntity);
             await UnitOfWork.SaveChangesAsync();
             
