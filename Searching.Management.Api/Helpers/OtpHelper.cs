@@ -52,7 +52,7 @@ public class OtpHelper:IOtpHelper
         
         var secreteKey = GetSecreteKey().Result;
         var client = new VaultClient();
-        var keys = client.ReadSecret("sdsds", secreteKey).Result;
+        var keys = client.ReadSecret("/secrets/otp/sicrete", secreteKey).Result;
         var key = Encoding.UTF8.GetBytes("dfd");
         
         using (var aes = new AesCryptoServiceProvider())
