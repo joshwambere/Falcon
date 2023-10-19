@@ -1,8 +1,10 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using Searching.Domain.Base;
 using Searching.Domain.Enums;
 
 namespace Searching.Domain.Entities;
 
+[Table("User")]
 public class User:BaseEntity
 {
     public string UserName { get; set; }
