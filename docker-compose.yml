@@ -2,17 +2,24 @@ version: '3'
 
 networks:
   backend:
+    driver: bridge
+  vault-network:
+    driver: bridge
 
 volumes:
   produtosdata:
+  vault-volume:
 
 services:
   db:
     image: "postgres:latest"
+    container_name: db
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: okayfine
       POSTGRES_DB: falcon
+    ports:
+      - "5432:5432"
     networks:
         - backend
 
@@ -25,8 +32,31 @@ services:
       - backend
     ports:
       - "7284:443"
-      - "7283:80"
+      - "7283:8080"
+    volumes:
+      - ./migration.sh:/migration.sh
     environment:
-      ConnectionStrings__Default: "Host=db;Port=5432;Database=falcon;Username=postgres;Password=okayfine;"
+      ConnectionStrings__Default: "Server=db;Port=5432;Database=falcon;Username=postgres;Password=okayfine;"
     depends_on:
       - db
+  
+  vault:
+    image: vault:1.13.3
+    container_name: vault
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_ADDR: 'https://0.0.0.0:8200'
+      VAULT_DEV_ROOT_TOKEN_ID: 'okayfines1cr3t'
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - vault-volume:/data
+      - ./workflow-vault.sh:/workflow-vault.sh
+      - ./vault-policy.hcl:/vault-policy.hcl
+    healthcheck:
+      retries: 5
+      test: ["CMD", "curl", "-f", "http://localhost:443"]
+    networks:
+      - backend
+      - vault-network
