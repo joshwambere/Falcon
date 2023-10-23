@@ -14,4 +14,3 @@ public class SingletonServiceAttribute : Attribute
 public class AppMiddleWareAttribute : Attribute
 {
 }
-
