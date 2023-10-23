@@ -7,7 +7,6 @@ public class AppSettings
     public AppUrls? AppUrls { get; init; }
     public OTPSettings OTPSettings { get; init; }
     public HashiCorp? HashiCorp { get; init; }
-
 }
 
 public class Jwt
@@ -15,7 +14,6 @@ public class Jwt
     public string? key { get; init; }
     public string? issuer { get; init; }
     public string? audience { get; init; }
-    
 }
 
 public class Sendgrid
@@ -34,7 +32,6 @@ public class AppUrls
 public class OTPSettings
 {
     public string? secreteKey { get; init; }
-   
 }
 
 public class HashiCorp

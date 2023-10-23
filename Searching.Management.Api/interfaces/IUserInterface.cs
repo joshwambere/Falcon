@@ -13,6 +13,4 @@ public interface IUserInterface
 
 
     public Task<VerifyResponse> VerifyAsync(VerifyRequest request);
-
-
 }
