@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Searching.Domain.Entities;
@@ -10,40 +9,41 @@ using Searching.Management.Api.Attributes;
 namespace Searching.Management.Api.Helpers;
 
 [ScoppedService]
-public  class TokenHelper : ITokenHelper
+public class TokenHelper : ITokenHelper
 {
     private readonly AppSettings _appSettings;
-    public  TokenHelper(IOptions<AppSettings> appSettings)
+
+    public TokenHelper(IOptions<AppSettings> appSettings)
     {
         _appSettings = appSettings.Value;
-        
     }
-    public string GenerateToken(User user, int duration=59)
+
+    public string GenerateToken(User user, int duration = 59)
     {
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appSettings.Jwt?.key!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var claims = new[]
         {
             new Claim("userName", user.UserName),
-            new Claim("Id", user.Id.ToString()),
+            new Claim("Id", user.Id)
         };
-         var token = new JwtSecurityToken(
-             _appSettings.Jwt!.issuer,
-             _appSettings.Jwt.audience,
+        var token = new JwtSecurityToken(
+            _appSettings.Jwt!.issuer,
+            _appSettings.Jwt.audience,
             claims,
-            expires: duration != 59?DateTime.Now.AddMinutes(duration) : DateTime.Now.AddMinutes(59),
-            signingCredentials: credentials);       
-        
+            expires: duration != 59 ? DateTime.Now.AddMinutes(duration) : DateTime.Now.AddMinutes(59),
+            signingCredentials: credentials);
+
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
-    
+
 
     public string ActivationToken(User user)
     {
         return GenerateToken(user, 15);
     }
-    
-    public (bool,JwtSecurityToken) VerifyToken(string token)
+
+    public (bool, JwtSecurityToken) VerifyToken(string token)
     {
         var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_appSettings.Jwt?.key!));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -66,8 +66,7 @@ public  class TokenHelper : ITokenHelper
         }
         catch
         {
-            return (false,null);
+            return (false, null);
         }
     }
-
 }

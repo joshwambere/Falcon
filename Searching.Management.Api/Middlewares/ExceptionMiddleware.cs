@@ -6,14 +6,15 @@ using Searching.Management.Api.Attributes;
 namespace Searching.Management.Api.Middlewares;
 
 [AppMiddleWare]
-
-public class ExceptionMiddleware:IMiddleware
+public class ExceptionMiddleware : IMiddleware
 {
-    private  ILoggerFactory _logger;
+    private readonly ILoggerFactory _logger;
+
     public ExceptionMiddleware(ILoggerFactory logger)
     {
         _logger = logger;
     }
+
     public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
         try

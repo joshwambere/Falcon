@@ -10,13 +10,13 @@ public class LoginRequest
 
 public class RegisterDto
 {
-    [Required] public  string Username { get; set; }
-    [Required, MinLength(6)]public string Password { get; set; }
-    [Required,EmailAddress]public string Email { get; set; }
-    [Required, Phone]public string Phone { get; set; }
+    [Required] public string Username { get; set; }
+    [Required] [MinLength(6)] public string Password { get; set; }
+    [Required] [EmailAddress] public string Email { get; set; }
+    [Required] [Phone] public string Phone { get; set; }
 }
 
-public class  LoginResponse
+public class LoginResponse
 {
     public string Token { get; set; }
 }
@@ -45,6 +45,8 @@ public class VerifyRequest
 
 public class OtpDto
 {
-    [Required,MaxLength(4), MinLength(4)]public string OTPCode { get; set; }
-    
+    [Required]
+    [MaxLength(4)]
+    [MinLength(4)]
+    public string OTPCode { get; set; }
 }
