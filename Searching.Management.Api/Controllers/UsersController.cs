@@ -1,6 +1,4 @@
-using System.Web;
 using Microsoft.AspNetCore.Mvc;
-using Searching.Infrastructure.Exceptions;
 using Searching.Infrastructure.Utils;
 using Searching.Management.Api.DTOs;
 using Searching.Management.Api.Services;
@@ -11,45 +9,45 @@ namespace Searching.Management.Api.Controllers;
 [Route("api/users")]
 public class UsersController : ControllerBase
 {
-    private readonly  UserService _userService;
-    private ILogger<UsersController> _logger;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly UserService _userService;
+    private ILogger<UsersController> _logger;
 
-    public UsersController(UserService userService, ILogger<UsersController> logger, IHttpContextAccessor httpContextAccessor)
+    public UsersController(UserService userService, ILogger<UsersController> logger,
+        IHttpContextAccessor httpContextAccessor)
     {
         _userService = userService;
         _logger = logger;
         _httpContextAccessor = httpContextAccessor;
     }
-    
-    
+
+
     [HttpPost("login")]
     public async Task<ActionResult<LoginResponse>> Login(LoginRequest request)
     {
         var result = await _userService.LoginAsync(request);
-        
+
         return Ok(result);
     }
-    
+
     [HttpPost("register")]
     public async Task<ActionResult<RegisterResponse>> Register([FromBody] RegisterDto userDto)
     {
         var result = await _userService.RegisterWithOtp(userDto);
         return Ok(result);
     }
-    
+
     [HttpGet("logout")]
     public async Task<ActionResult<LogoutResponse>> Logout()
     {
         var result = await _userService.LogoutAsync();
         return Ok(result);
     }
-    
-    
+
+
     [HttpGet("verify/{token}")]
     public async Task<ContentResult> Verify(string token)
     {
-
         try
         {
             await _userService.VerifyAsync(token);
@@ -70,7 +68,7 @@ public class UsersController : ControllerBase
             };
         }
     }
-    
+
     [HttpPost("verify")]
     public async Task<ActionResult<VerifyResponse>> VerifyOtp([FromBody] OtpDto verifyByOtpDto)
     {

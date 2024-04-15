@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Folder Include="Data\EntitesConfig" />
+    <Folder Include="Migrations\" />
   </ItemGroup>
 
   <ItemGroup>
